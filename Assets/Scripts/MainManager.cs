@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+// This is MainManager for the Data Persistence Project
+
 public class MainManager : MonoBehaviour
 {
     public Brick BrickPrefab;
@@ -14,10 +16,8 @@ public class MainManager : MonoBehaviour
     public GameObject GameOverText;
     
     private bool m_Started = false;
-    private int m_Points;
-    
+    private int m_Points;  
     private bool m_GameOver = false;
-
     
     // Start is called before the first frame update
     void Start()
@@ -35,7 +35,7 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
-        }
+        }	
     }
 
     private void Update()
@@ -61,6 +61,8 @@ public class MainManager : MonoBehaviour
             }
         }
     }
+
+	// I want to display the saved name from the JSON file here somehow
 
     void AddPoint(int point)
     {
