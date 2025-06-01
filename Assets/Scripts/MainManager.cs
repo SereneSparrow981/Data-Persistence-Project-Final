@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,15 +14,22 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
-    public GameObject GameOverText;
-    
+    public GameObject GameOverText;				// Assigned to Gameover Text object in Inspector
+	public TextMeshProUGUI playerName;
+	public TextMeshProUGUI highScoreText;		// A
+										
     private bool m_Started = false;
     private int m_Points;  
     private bool m_GameOver = false;
     
+	public static MainManager Instance;		// Static class to persist from the Main game scene to the Menu scene
+	
     // Start is called before the first frame update
     void Start()
-    {
+    {        
+		playerName.text = "Name: " + TextSaver.Instance.SavedName;	// A
+		highScoreText.text = $"High Score: {TextSaver.Instance.SavedName} - {TextSaver.Instance.SavedHighScore}";	// A
+		
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -37,6 +45,18 @@ public class MainManager : MonoBehaviour
             }
         }	
     }
+	
+	private void Awake()				// Singleton for MainManager to persist into the menu scene
+	
+	{		if (Instance != null)		// Prevent duplicates of MainManager
+		{
+			Destroy(gameObject);
+			return;
+		}
+		
+		Instance = this;
+		DontDestroyOnLoad(gameObject);		
+	}
 
     private void Update()
     {
@@ -74,5 +94,12 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+		
+		if (m_Points > TextSaver.Instance.SavedHighScore)		// Save new high score if greater than old score
+		{
+			string currentName = TextSaver.Instance.SavedName;
+			TextSaver.Instance.SaveHighScore(currentName, m_Points);
+			Debug.Log("New High Score!");
+		}
     }
 }
