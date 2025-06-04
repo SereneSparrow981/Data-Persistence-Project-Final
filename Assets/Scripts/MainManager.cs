@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-// This is MainManager for the Data Persistence Project
+// MainManager for Data Persistence Project
 
 public class MainManager : MonoBehaviour
 {
@@ -14,22 +14,18 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
-    public GameObject GameOverText;				// Assigned to Gameover Text object in Inspector
-	public TextMeshProUGUI playerName;
-	public TextMeshProUGUI highScoreText;		// A
-										
-    private bool m_Started = false;
-    private int m_Points;  
-    private bool m_GameOver = false;
+	public TextMeshProUGUI highScoreText;	// Added 2025-06-04 16:48
+    public GameObject GameOverText;
     
-	public static MainManager Instance;		// Static class to persist from the Main game scene to the Menu scene
-	
+    private bool m_Started = false;
+    private int m_Points;
+    
+    private bool m_GameOver = false;
+
+    
     // Start is called before the first frame update
     void Start()
-    {        
-		playerName.text = "Name: " + TextSaver.Instance.SavedName;	// A
-		highScoreText.text = $"High Score: {TextSaver.Instance.SavedName} - {TextSaver.Instance.SavedHighScore}";	// A
-		
+    {	
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -43,20 +39,9 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
-        }	
+        }
+		highScoreText.text = $"High Score: {TextSaver.Instance.SavedName} - {TextSaver.Instance.SavedHighScore}";	// Added 2025-06-04 17:34
     }
-	
-	private void Awake()				// Singleton for MainManager to persist into the menu scene
-	
-	{		if (Instance != null)		// Prevent duplicates of MainManager
-		{
-			Destroy(gameObject);
-			return;
-		}
-		
-		Instance = this;
-		DontDestroyOnLoad(gameObject);		
-	}
 
     private void Update()
     {
@@ -81,9 +66,7 @@ public class MainManager : MonoBehaviour
             }
         }
     }
-
-	// I want to display the saved name from the JSON file here somehow
-
+	
     void AddPoint(int point)
     {
         m_Points += point;
@@ -95,11 +78,12 @@ public class MainManager : MonoBehaviour
         m_GameOver = true;
         GameOverText.SetActive(true);
 		
-		if (m_Points > TextSaver.Instance.SavedHighScore)		// Save new high score if greater than old score
+		// Save new high score if greater than old high score
+		// This if statement added 2025-06-04 16:56
+		if (m_Points > TextSaver.Instance.SavedHighScore)
 		{
-			string currentName = TextSaver.Instance.SavedName;
-			TextSaver.Instance.SaveHighScore(currentName, m_Points);
-			Debug.Log("New High Score!");
+			TextSaver.Instance.SaveHighScore(m_Points);
+			Debug.Log("New High Score!");			
 		}
     }
 }

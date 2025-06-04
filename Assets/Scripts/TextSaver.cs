@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,13 +13,8 @@ public class TextSaver : MonoBehaviour
 	public InputField inputField;		// To store and pass player name
 	private string filePath;			// For saving JSON file
 	public static TextSaver Instance;	// Object attached to this script to persist between scenes, therefore needs to be static class
-	
-	[System.Serializable]
-	public class NameData
-	{
-	 	public string savedText;
-	}
-	
+	public TextMeshProUGUI highScoreText;
+		
 	[System.Serializable]								// A
 	public class SaveData								// A
 	{
@@ -25,6 +22,7 @@ public class TextSaver : MonoBehaviour
 		public int highScore;							// A
 	}
 
+	public string CurrentPlayerName { get; private set; } = "";					//A
 	public string SavedName { get; private set; }		// A
 	public int SavedHighScore { get; private set; }		// A
 	
@@ -33,7 +31,7 @@ public class TextSaver : MonoBehaviour
     {
 		filePath = Path.Combine(Application.persistentDataPath, "savedText.json");
 		LoadText();						// Load text at start if it exists
-       
+ 		highScoreText.text = $"High Score: {TextSaver.Instance.SavedName} - {TextSaver.Instance.SavedHighScore}";
     }
 	
 	private void Awake()
@@ -48,20 +46,25 @@ public class TextSaver : MonoBehaviour
 		DontDestroyOnLoad(gameObject);	// Allows TextSaver to persist between scenes
 	}
 
-	public void SaveHighScore(string playerName, int score)	// A
-	{
-		SaveData data = new SaveData {playerName = playerName, highScore = score};
-		string json = JsonUtility.ToJson(data);
-		File.WriteAllText(filePath, json);
-		Debug.Log("High Score saved: " + playerName + " - " + score);
-	}
-
 	public void SaveText()												// Method to save username
 	{
-		NameData data = new NameData {savedText = inputField.text};		// Make new instance of NameData
-		string json = JsonUtility.ToJson(data);							// Convert to JSON
-		File.WriteAllText(filePath, json);								// Write JSON to file
-		Debug.Log("Name saved: " + inputField.text);
+		if (inputField != null)
+		{
+		CurrentPlayerName = inputField.text;
+		Debug.Log("Welcome, player " + CurrentPlayerName);
+		}
+	}
+
+	public void SaveHighScore(int score)	// A
+	{
+		SaveData data = new SaveData {playerName = CurrentPlayerName, highScore = score};
+		
+		string json = JsonUtility.ToJson(data);
+		File.WriteAllText(filePath, json);
+		
+		SavedName = CurrentPlayerName;
+		SavedHighScore = score;
+		Debug.Log("High Score saved: " + CurrentPlayerName + " : " + score );
 	}
 	
 	public void LoadText()
@@ -74,9 +77,9 @@ public class TextSaver : MonoBehaviour
 			SavedHighScore = data.highScore;
 
 		if (inputField != null)
-			inputField.text = data.playerName;
-
-			Debug.Log("Loaded Name: " + data.playerName + " | High Score: " + data.highScore);
+			inputField.text = "";	// Start blank
+			CurrentPlayerName = "";	// Don't assume current player is same as previous best
+			Debug.Log("Loaded Name: " + SavedName + " | High Score: " + SavedHighScore);
 		}
 		
 		else
