@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // DO NOT DELETE
+// TextSaver for Data Persistence Project
 
 public class TextSaver : MonoBehaviour
 {
