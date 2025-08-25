@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 public class TextSaver : MonoBehaviour
 {
-	public InputField inputField;		// To store and pass player name
+	public InputField inputField;		// To store and pass player name in Unity 2020.3.7f1
 	private string filePath;			// For saving JSON file
 	public static TextSaver Instance;	// Object attached to this script to persist between scenes, therefore needs to be static class
 	public TextMeshProUGUI highScoreText;
